@@ -30,8 +30,7 @@ export const appRouter = router({
     me: publicProcedure.query(opts => opts.ctx.user),
     login: publicProcedure.input(z.object({ email: z.string().email(), password: z.string().min(1) })).mutation(async ({ input, ctx }) => {
       if (!(await verifyAdminCredentials(input.email, input.password))) throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password" });
-      await createSession(ctx.res);
-      return ctx.user;
+      return createSession(ctx.res);
     }),
     logout: publicProcedure.mutation(({ ctx }) => { clearSession(ctx.res); return { success: true } as const; }),
   }),

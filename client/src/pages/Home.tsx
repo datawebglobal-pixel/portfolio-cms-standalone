@@ -37,7 +37,7 @@ export default function Home() {
             <h1 className="font-display max-w-4xl text-[clamp(3.7rem,9vw,7.5rem)] font-bold leading-[.88] tracking-[-0.085em]">Digital work<br /><span className="text-[#ff6845]">with intent.</span></h1>
             <p className="mt-9 max-w-[460px] text-[17px] leading-8 text-[#68635c]">I&apos;m Josua Abimanyu — a multidisciplinary designer and engineer creating clear, compelling digital products for ambitious teams.</p>
             <div className="mt-10 flex flex-wrap items-center gap-3"><a href="#work" className="group rounded-full bg-[#ff6845] px-6 py-3.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#e95534]">View my work <ArrowUpRight className="ml-2 inline h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></a><a href="#contact" className="rounded-full border border-black/15 px-6 py-3.5 text-sm font-semibold transition hover:border-black/40 hover:bg-white/50">Contact me</a></div>
-            <div className="mt-20 flex items-center gap-5 text-xs text-[#8a857d]"><span className="h-px w-10 bg-[#ff6845]" /> Based in Jakarta · Working worldwide</div>
+            <div className="mt-20 flex items-center gap-5 text-xs text-[#8a857d]"><span className="h-px w-10 bg-[#ff6845]" /> Based in Bandung · Working worldwide</div>
           </div>
           <div className="relative flex min-h-[430px] items-center justify-center lg:min-h-[560px]">
             <div className="absolute h-[350px] w-[350px] rounded-full bg-[#f9a48c]/30 blur-3xl lg:h-[510px] lg:w-[510px]" />

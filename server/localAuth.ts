@@ -17,6 +17,7 @@ export async function verifyAdminCredentials(email: string, password: string) {
 export async function createSession(res: Response) {
   const token = await new SignJWT({ email: adminEmail, role: "admin", name: adminName }).setProtectedHeader({ alg: "HS256" }).setSubject("1").setIssuedAt().setExpirationTime("30d").sign(secret);
   res.setHeader("Set-Cookie", `${COOKIE_NAME}=${token}; Max-Age=2592000; ${cookieOptions}`);
+  return adminUser();
 }
 export function clearSession(res: Response) { res.setHeader("Set-Cookie", `${COOKIE_NAME}=; Max-Age=0; ${cookieOptions}`); }
 export async function getCurrentUser(req: Request): Promise<LocalUser | null> {
