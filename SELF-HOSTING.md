@@ -1,28 +1,42 @@
-# Portfolio CMS — Self-hosting guide
+# Portfolio CMS — Hosting guide
 
-This project is fully self-hosted. It uses React/Vite for the client, Express/tRPC for the API, JSON file for persistence, signed HTTP-only cookie sessions for admin authentication, and the local filesystem for project images.
+This project uses React/Vite for the client, Express/tRPC for the API, Supabase PostgreSQL for portfolio records, Supabase Storage for images, and signed HTTP-only cookie sessions for admin authentication.
 
 ## Local setup
 
 1. Install Node.js 22 or newer and pnpm.
 2. Run `pnpm install`.
-3. Copy `ENVIRONMENT.example` to your hosting provider's environment-variable settings.
-4. Set a long random `SESSION_SECRET`, a strong `ADMIN_EMAIL`, and either `ADMIN_PASSWORD` or a bcrypt `ADMIN_PASSWORD_HASH`.
-5. Run `pnpm dev` for development.
-6. Run `pnpm check`, `pnpm test`, and `pnpm build` before deployment.
+3. Create a Supabase project.
+4. Create the `projects` table and enable RLS with a policy that allows public reads only where `is_published = true`.
+5. Create a public Storage bucket named `portfolio-images`.
+6. Copy `ENVIRONMENT.example` into your local environment settings.
+7. Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and a long random `SESSION_SECRET`.
+8. Set the requested admin email and password, or use `ADMIN_PASSWORD_HASH` in production.
+9. Run `pnpm dev` for development.
+10. Run `pnpm check`, `pnpm test`, and `pnpm build` before deployment.
 
-## Production requirements
+## Environment variables
 
-Use a Node.js host with a persistent disk. The `data/` directory contains the JSON file database and the `uploads/` directory contains uploaded images. If the host uses ephemeral containers, attach a persistent volume or replace the local adapters in `server/localDb.ts` and `server/localStorage.ts` with managed services.
+`SUPABASE_SERVICE_ROLE_KEY` is a server-only secret. Do not expose it through a `VITE_` variable and do not commit it to GitHub. The publishable key may be exposed to the browser only when RLS policies are configured correctly.
 
-The application serves the public portfolio at `/` and the private CMS at `/admin`. Admin mutations are protected by the signed session cookie and the server-side admin role check.
+## Vercel and Supabase
+
+Supabase is the persistent data layer. Project rows are stored in the `projects` table and uploaded images are stored in the `portfolio-images` bucket, so a Vercel redeploy does not require re-uploading portfolio content.
+
+Import the GitHub repository into Vercel and add the variables from `ENVIRONMENT.example` to the Vercel project settings. Configure them for Production, Preview, and Development. Keep the service key, session secret, and admin password server-only.
+
+Before relying on a production deployment, verify that the selected Vercel runtime supports the Express/tRPC backend entrypoint. Then test the public site, `/admin`, login, image upload, project create/edit/delete, publish/unpublish, and public rendering.
+
+## Alternative persistent Node host
+
+A VPS or Node.js host with a persistent filesystem can also run the project. Supabase remains recommended for portfolio records and images because it provides durable storage independent of the application process.
 
 ## Deployment commands
 
 ```bash
 pnpm install --prod=false
+pnpm check
+pnpm test
 pnpm build
 pnpm start
 ```
-
-Set `NODE_ENV=production` and expose the port provided by the hosting platform through `PORT`.

@@ -6,6 +6,8 @@ ADMIN_EMAIL=josuaabimanyu913@gmail.com
 ADMIN_PASSWORD=replace-with-a-strong-password
 # Prefer a bcrypt hash for production:
 # ADMIN_PASSWORD_HASH=$2b$12$...
-DATABASE_DIR=./data
-DATABASE_FILE=portfolio.sqlite
-UPLOAD_DIR=./uploads
+
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=replace-with-server-only-supabase-secret
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=replace-with-supabase-publishable-key

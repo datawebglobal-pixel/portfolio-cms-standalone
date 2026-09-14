@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { clearSession, createSession, verifyAdminCredentials } from "./localAuth";
-import { createProject, deleteProject, getPublishedProjectBySlug, listAllProjects, listPublishedProjects, updateProject } from "./localDb";
-import { localStoragePut } from "./localStorage";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { nanoid } from "nanoid";
+import { clearSession, createSession, verifyAdminCredentials } from "./localAuth";
+import { createProject, deleteProject, getPublishedProjectBySlug, listAllProjects, listPublishedProjects, updateProject } from "./supabaseDb";
+import { supabaseStoragePut } from "./supabaseStorage";
+import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 
 const projectInput = z.object({
   title: z.string().min(2).max(180),
@@ -36,8 +36,8 @@ export const appRouter = router({
   }),
   portfolio: router({
     published: publicProcedure.query(() => listPublishedProjects()),
-    bySlug: publicProcedure.input(z.object({ slug: z.string() })).query(({ input }) => {
-      const project = getPublishedProjectBySlug(input.slug);
+    bySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ input }) => {
+      const project = await getPublishedProjectBySlug(input.slug);
       if (!project) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
       return project;
     }),
@@ -47,12 +47,12 @@ export const appRouter = router({
       const base64 = input.dataUrl.split(",")[1] ?? input.dataUrl;
       const buffer = Buffer.from(base64, "base64");
       if (buffer.byteLength > 8 * 1024 * 1024) throw new TRPCError({ code: "PAYLOAD_TOO_LARGE", message: "Images must be under 8MB" });
-      return localStoragePut(`${nanoid(6)}-${input.filename.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-80)}`, buffer, input.contentType);
+      return supabaseStoragePut(`${nanoid(6)}-${input.filename}`, buffer, input.contentType);
     }),
     create: adminOnly.input(projectInput).mutation(({ input }) => createProject({ ...input, slug: `${input.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 130)}-${nanoid(6)}`, thumbnailUrl: input.thumbnailUrl || null, demoUrl: input.demoUrl || null, githubUrl: input.githubUrl || null })),
-    update: adminOnly.input(projectInput.extend({ id: z.number().int() })).mutation(({ input }) => {
+    update: adminOnly.input(projectInput.extend({ id: z.number().int() })).mutation(async ({ input }) => {
       const { id, ...data } = input;
-      const existing = listAllProjects().find(project => project.id === id);
+      const existing = (await listAllProjects()).find(project => project.id === id);
       if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
       return updateProject(id, { ...data, slug: existing.slug, thumbnailUrl: data.thumbnailUrl || null, demoUrl: data.demoUrl || null, githubUrl: data.githubUrl || null });
     }),
