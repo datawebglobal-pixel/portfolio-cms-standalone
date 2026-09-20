@@ -6,7 +6,7 @@
   "functions": {
     "api/**/*.ts": {
       "runtime": "vercel-node@latest",
-      "includeFiles": "server/**\nshared/**"
+      "includeFiles": "dist/**"
     }
   },
   "rewrites": [
