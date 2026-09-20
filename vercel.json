@@ -1,8 +1,14 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "$schema": "https://vercel.sh",
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "installCommand": "pnpm install --frozen-lockfile",
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "vercel-node@latest",
+      "includeFiles": "server/**\nshared/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",
