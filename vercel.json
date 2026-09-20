@@ -2,12 +2,7 @@
   "$schema": "https://vercel.sh",
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "functions": {
-    "api/**/*.ts": {
-      "includeFiles": "dist/**"
-    }
-  },
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "rewrites": [
     {
       "source": "/((?!api/).*)",
